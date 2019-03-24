@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Grid, Button } from "semantic-ui-react";
 import EventList from "../EventList/EventList";
 import EventForm from "../EventForm/EventForm";
+import cuid from "cuid";
 
 const eventsDashboard = [
   {
@@ -56,28 +57,38 @@ const eventsDashboard = [
 
 class EventDashboard extends Component {
   state = {
-      events: eventsDashboard,
-      isOpen: false
-    };
+    events: eventsDashboard,
+    isOpen: false
+  };
 
-  handleFormOpen = (thing) => () => {
+  handleFormOpen = thing => () => {
     this.setState({
       isOpen: true
     });
     console.log(thing);
-  }
-  
-//   handleFormOpen() {
-//     this.setState({
-//       isOpen: true
-//     });
-//   }
+  };
+
+  //   handleFormOpen() {
+  //     this.setState({
+  //       isOpen: true
+  //     });
+  //   }
 
   handleFormCancel = () => {
     this.setState({
       isOpen: false
     });
-  }
+  };
+
+  handleCreateEvent = newEvent => {
+    newEvent.id = cuid();
+    newEvent.hostPhotoURL = "./assets/default-user.jpg";
+    const updatedEvent = [...this.state.events, newEvent];
+    this.setState({
+      events: updatedEvent,
+      isOpen: false
+    });
+  };
 
   render() {
     return (
@@ -87,12 +98,14 @@ class EventDashboard extends Component {
         </Grid.Column>
         <Grid.Column width={6}>
           <Button
-            onClick={this.handleFormOpen('a string')}
+            onClick={this.handleFormOpen("a string")}
             positive
             content="Create Event"
           />
           {/*this.state.isOpen && <EventForm handleFormCancel={this.handleFormCancel}/>*/}
-          {this.state.isOpen && <EventForm handleFormCancel={this.handleFormCancel}/>}
+          {this.state.isOpen && (
+            <EventForm createEvent={this.handleCreateEvent} handleFormCancel={this.handleFormCancel} />
+          )}
         </Grid.Column>
       </Grid>
     );
