@@ -20,7 +20,7 @@ const mapState = (state, ownProps) => {
   };
 };
 
-const EventDetailedPage = ({event}) => {
+const EventDetailedPage = ({ event }) => {
   return (
     <Grid>
       <Grid.Column width={11}>
@@ -29,7 +29,9 @@ const EventDetailedPage = ({event}) => {
         <EventDetailedChat />
       </Grid.Column>
       <Grid.Column width={5}>
-        <EventDetailedSidebar attendees={event.attendees} />
+        {event.attendees.length > 0 && (
+          <EventDetailedSidebar attendees={event.attendees} />
+        )}
       </Grid.Column>
     </Grid>
   );
