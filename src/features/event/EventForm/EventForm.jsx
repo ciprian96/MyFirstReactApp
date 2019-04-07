@@ -94,7 +94,6 @@ class EventForm extends Component {
   };
 
   handleVenueSelect = selectedVenue => {
-    console.log("orasul selectat este: " + selectedVenue);
     geocodeByAddress(selectedVenue)
       .then(results => getLatLng(results[0]))
       .then(latlng => {
@@ -103,7 +102,6 @@ class EventForm extends Component {
         });
       })
       .then(() => {
-        console.log("ajunge aici");
         this.props.change("venue", selectedVenue);
       });
   };
