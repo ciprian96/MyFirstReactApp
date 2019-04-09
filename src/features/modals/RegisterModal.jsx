@@ -10,7 +10,7 @@ const actions = { closeModal };
 class RegisterModal extends Component {
   render() {
     return (
-      <Modal size="mini" open={true} onClose={this.props.closeModal}>
+      <Modal size="small" open={true} onClose={this.props.closeModal}>
         <Modal.Header>Sign Up to Re-vents!</Modal.Header>
         <Modal.Content>
           <Modal.Description>
