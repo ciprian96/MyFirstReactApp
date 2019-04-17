@@ -23,8 +23,8 @@ class GooglePlaceInput extends Component {
     return (
       <Form.Field error={touched && !!error} width={width}>
         <GoogleComponent
-          apiKey="AIzaSyA5NdTX1mPq4vQcFDREYhbWvubXmOjKJ_o"
-          language={"en"}
+          //apiKey="AIzaSyA5NdTX1mPq4vQcFDREYhbWvubXmOjKJ_o"
+          //language={"en"}
           coordinates={coordinates}
           onSelect={onSelect}
           inputProps={{ ...input, placeholder }}
