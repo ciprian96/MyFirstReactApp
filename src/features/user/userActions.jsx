@@ -20,8 +20,8 @@ export const updateProfile = (user) =>
         }
     }
 
-export const uploadProfileImage = (file, fileName) => 
-    async (dispatch, getState, {getFirebase, getFirestore}) => {
+export const uploadProfileImage = (file, fileName) =>
+    async (dispatch, getState, { getFirebase, getFirestore }) => {
         const imageName = cuid();
         const firebase = getFirebase();
         const firestore = getFirestore();
@@ -51,11 +51,11 @@ export const uploadProfileImage = (file, fileName) =>
             await firestore.add({
                 collection: 'users',
                 doc: user.uid,
-                subcollections: [{collection: 'photos'}]
+                subcollections: [{ collection: 'photos' }]
             }, {
-                name: imageName,
-                url: downloadURL
-            })
+                    name: imageName,
+                    url: downloadURL
+                })
             dispatch(asyncActionFinish());
         } catch (error) {
             console.log(error);
@@ -64,8 +64,8 @@ export const uploadProfileImage = (file, fileName) =>
         }
     }
 
-export const deletePhoto = (photo) => 
-    async (dispatch, getState, {getFirebase, getFirestore}) => {
+export const deletePhoto = (photo) =>
+    async (dispatch, getState, { getFirebase, getFirestore }) => {
         const firebase = getFirebase();
         const firestore = getFirestore();
         const user = firebase.auth().currentUser;
@@ -74,7 +74,7 @@ export const deletePhoto = (photo) =>
             await firestore.delete({
                 collection: 'users',
                 doc: user.uid,
-                subcollections: [{collection: 'photos', doc: photo.id}]
+                subcollections: [{ collection: 'photos', doc: photo.id }]
             })
         } catch (error) {
             console.log(error);
@@ -83,8 +83,8 @@ export const deletePhoto = (photo) =>
     }
 
 
-export const setMainPhoto = photo => 
-    async (dispatch, getState, {getFirebase}) => {
+export const setMainPhoto = photo =>
+    async (dispatch, getState, { getFirebase }) => {
         const firebase = getFirebase();
         try {
             return await firebase.updateProfile({
@@ -93,5 +93,49 @@ export const setMainPhoto = photo =>
         } catch (error) {
             console.log(error);
             throw new Error("Problem setting main photo");
+        }
+    }
+
+export const goingToEvent = (event) =>
+    async (dispatch, getState, { getFirestore }) => {
+        const firestore = getFirestore();
+        const user = firestore.auth().currentUser;
+        const photoURL = getState().firebase.profile.photoURL;
+        const attendee = {
+            going: true,
+            joinDate: Date.now(),
+            photoURL: photoURL || '/assets/default-user.jpg',
+            displayName: user.displayName,
+            host: false
+        }
+        try {
+            await firestore.update(`events/${event.id}`, {
+                [`attendees.${user.uid}`]: attendee
+            })
+            await firestore.set(`event_attendee/${event.id}_${user.uid}`, {
+                eventId: event.id,
+                userUid: user.uid,
+                eventDate: event.date,
+                host: false
+            })
+            toastr.success("Success", "You have signed up to the event");
+        } catch (error) {
+            console.log(error);
+            toastr.error("Oops", "Problem signin up to event ");
+        }
+    }
+
+export const cancelGoingToEvent = (event) =>
+    async (dispatch, getState, {getFirestore}) => {
+        const firestore = getFirestore();
+        const user = firestore.auth().currentUser;
+        try {
+            await firestore.update(`events/${event.id}`, {
+                [`attendees.${user.uid}`]: firestore.FieldValue.delete()
+            })
+            await firestore.delete(`event_attendee/${event.id}_${user.uid}`);
+            toastr.success('Success', 'You have removed yourself from the event');
+        } catch (error) {
+            console.log("Oops", "Something went wrong")
         }
     }

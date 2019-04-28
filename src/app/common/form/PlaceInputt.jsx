@@ -4,6 +4,12 @@ import Script from "react-load-script";
 import PlacesAutocomplete, {
 } from "react-places-autocomplete";
 
+const styles = {
+    autocompleteContainer: {
+      zIndex: 1000
+    }
+  }
+
 class PlaceInputt extends Component {
     state = {
         scriptLoaded: false
@@ -32,8 +38,7 @@ class PlaceInputt extends Component {
                         inputProps={{ ...input, placeholder }}
                         options={options}
                         onSelect={onSelect}
-                        value={this.state.address}
-                        onChange={this.handleChange}
+                        styles={styles}
                     />}
                 {touched && error &&
                     <Label basic color="red">
