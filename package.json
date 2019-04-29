@@ -15,6 +15,7 @@
     "react-dropzone": "^4.2.9",
     "react-google-autocomplete": "^1.0.18",
     "react-google-location": "^1.2.2",
+    "react-infinite-scroller": "^1.1.3",
     "react-lazyload": "^2.3.0",
     "react-load-script": "0.0.6",
     "react-places-autocomplete": "^6.1.3",

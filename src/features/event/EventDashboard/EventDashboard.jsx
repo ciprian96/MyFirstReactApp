@@ -1,21 +1,62 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Grid } from "semantic-ui-react";
+import { Grid, Loader } from "semantic-ui-react";
 import EventList from "../EventList/EventList";
-import { deleteEvent } from "../eventActions";
+import { getEventsForDashboard } from "../eventActions";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import EventActivity from "../EventActivity/EventActivity";
-import { firestoreConnect, isLoaded, isEmpty } from "react-redux-firebase";
+import { firestoreConnect } from "react-redux-firebase";
 
 const mapState = state => ({
-  events: state.firestore.ordered.events
+  events: state.events,
+  loading: state.async.loading
 });
 
 const actions = {
-  deleteEvent
+  getEventsForDashboard
 };
 
 class EventDashboard extends Component {
+  state = {
+    moreEvents: false,
+    loadingInitial: true,
+    loadedEvents: []
+  }
+
+  async componentDidMount() {
+    let next = await this.props.getEventsForDashboard();
+    console.log("ajuge aiici");
+    console.log(next);
+
+    if (next && next.docs && next.docs.length > 1) {
+      this.setState({
+        moreEvents: true,
+        loadingInitial: false
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.events !== nextProps.events) {
+      this.setState({
+        loadedEvents: [...this.state.loadedEvents, ...nextProps.events]
+      });
+    }
+  }
+
+  getNextEvents = async () => {
+    const { events } = this.props;
+    let lastEvent = events && events[events.length - 1];
+    console.log(lastEvent);
+    let next = await this.props.getEventsForDashboard(lastEvent);
+    console.log(next);
+    if (next && next.docs && next.docs.length <= 1) {
+      this.setState({
+        moreEvents: false
+      });
+    }
+  }
+
   // state = {
   //   isOpen: false,
   //   selectedEvent: null
@@ -97,20 +138,25 @@ class EventDashboard extends Component {
   //   });
   // };
 
-  handleDeleteEvent = eventId => () => {
-    this.props.deleteEvent(eventId);
-  };
+  // handleDeleteEvent = eventId => () => {
+  //   this.props.deleteEvent(eventId);
+  // };
 
   render() {
-    const { events } = this.props;
-    if (!isLoaded(events) || isEmpty(events)) return <LoadingComponent />;
+    const { loading } = this.props;
+    const { moreEvents, loadedEvents } = this.state;
+    if (this.state.loadingInitial) return <LoadingComponent />;
     return (
       <Grid>
         <Grid.Column width={10}>
-          <EventList deleteEvent={this.handleDeleteEvent} events={events} />
+          <EventList loading={loading} moreEvents={moreEvents} events={loadedEvents} getNextEvents={this.getNextEvents} />
+          {/* <Button onClick={this.getNextEvents} loading={loading} disabled={!this.state.moreEvents} content='More' color='green' floated='right' /> */}
         </Grid.Column>
         <Grid.Column width={6}>
           <EventActivity />
+        </Grid.Column>
+        <Grid.Column width={10}>
+          <Loader active={loading} />
         </Grid.Column>
       </Grid>
     );
