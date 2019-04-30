@@ -20,8 +20,6 @@ const EventDetailedHeader = ({ event, isHost, isGoing, goingToEvent, cancelGoing
   let eventDate;
   if (event.date) {
     eventDate = event.date;
-    console.log(eventDate);
-
   }
   return (
     <Segment.Group>
